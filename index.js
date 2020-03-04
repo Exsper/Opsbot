@@ -11,7 +11,7 @@ module.exports.apply = (ctx, config = {}) => {
 	const osuToken = config.osuToken || ""; // 这个一定要设置，否则会出错
 	const ppysbToken = config.ppysbToken || "";
 	const osuBaseUrl = config.osuBaseUrl || "https://osu.ppy.sh/api";
-	const ppysbBaseUrl = options.baseUrl || 'https://osu.ppy.sb/api';
+	const ppysbBaseUrl = config.baseUrl || 'https://osu.ppy.sb/api';
 
 	// osuAPI
 	// https://github.com/Exsper/node-osu
