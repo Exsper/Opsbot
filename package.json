@@ -1,0 +1,16 @@
+{
+  "name": "opsbot",
+  "version": "1.0.0",
+  "description": "Another ppy.sb qq-bot plugin of koishi",
+  "main": "index.js",
+  "dependencies": {
+    "nedb": "^1.8.0",
+    "node-osu": "Exsper/node-osu"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Exsper",
+  "license": "ISC"
+}
