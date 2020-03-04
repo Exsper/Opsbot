@@ -15,7 +15,7 @@ module.exports.apply = (ctx, config = {}) => {
 
 	// osuAPI
 	// https://github.com/Exsper/node-osu
-	const osu = require('node-osu');
+	const osu = require('node-osu-exsper');
 	const osuApi = new osu.Api(ppysbToken, osuToken, {
 		baseUrl: ppysbBaseUrl,
 		beatmapBaseUrl: osuBaseUrl,
