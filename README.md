@@ -8,13 +8,13 @@ npm install Exsper/Opsbot
 
 ## usage
 ```
-app.plugin(require('Opsbot'), {osuToken: "abcdefg1234567"});
+app.plugin(require('Opsbot'));
 ```
 or
 ```
 module.exports = {
   plugins: [
-    ['Opsbot', {osuToken: "abcdefg1234567"}],
+    ['Opsbot'],
   ],
 }
 ```

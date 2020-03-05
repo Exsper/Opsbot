@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "nedb": "^1.8.0",
-    "node-osu-exsper": "Exsper/node-osu"
+    "node-osu": "^2.2.0"
   },
   "devDependencies": {},
   "scripts": {

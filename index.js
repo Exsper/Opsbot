@@ -8,17 +8,13 @@ module.exports.name = "Opsbot";
 
 // 插件处理和输出
 module.exports.apply = (ctx, config = {}) => {
-	const osuToken = config.osuToken || ""; // 这个一定要设置，否则会出错
-	const ppysbToken = config.ppysbToken || "";
-	const osuBaseUrl = config.osuBaseUrl || "https://osu.ppy.sh/api";
+	const ppysbToken = config.ppysbToken || "114514";
 	const ppysbBaseUrl = config.baseUrl || 'https://osu.ppy.sb/api';
 
 	// osuAPI
-	// https://github.com/Exsper/node-osu
-	const osu = require('node-osu-exsper');
-	const osuApi = new osu.Api(ppysbToken, osuToken, {
+	const osu = require('node-osu');
+	const osuApi = new osu.Api(ppysbToken, {
 		baseUrl: ppysbBaseUrl,
-		beatmapBaseUrl: osuBaseUrl,
 		notFoundAsError: true, // Throw an error on not found instead of returning nothing. (default: true)
 		completeScores: true, // When fetching scores also fetch the beatmap they are for (Allows getting accuracy) (default: false)
 		parseNumeric: false // Parse numeric values into numbers/floats, excluding ids
