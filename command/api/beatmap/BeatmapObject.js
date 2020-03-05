@@ -18,7 +18,7 @@ class BeatmapObject {
 
         const bpm = this.beatmap.bpm;
         const maxCombo = this.beatmap.maxCombo;
-        const spinner = this.beatmap.objects.spinner;
+        // const spinner = this.beatmap.objects.spinner;
         const cs = this.beatmap.difficulty.size;
         const ar = this.beatmap.difficulty.approach;
         const od = this.beatmap.difficulty.overall;
@@ -27,7 +27,7 @@ class BeatmapObject {
 
         let output = "";
 
-        output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + "(" + spinner + " spin) \n";
+        output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + "\n";
         output = output + "模式： " + beatmapMode + " 状态： " + approved + "\n";
         output = output + "CS" + cs + "  AR" + ar + "  OD" + od + "  HP" + hp + "  BPM: " + bpm + " stars: " + stars + "\n";
         output = output + "max Combo： " + maxCombo + "\n";

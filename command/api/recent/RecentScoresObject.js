@@ -27,7 +27,7 @@ class RecentScoresObject {
         const creator = this.score.beatmap.creator;
         const diff = this.score.beatmap.version;
         const maxCombo = this.score.beatmap.maxCombo;
-        const spinner = this.score.beatmap.objects.spinner;
+        // const spinner = this.score.beatmap.objects.spinner;
         // 判断是不是转谱
         const scoreMode = Array.isArray(options) ? options[0].m : options.m;
         let scoreModeString = "std";
@@ -36,11 +36,11 @@ class RecentScoresObject {
         else if (scoreMode === "3") scoreModeString = "mania";
 
         if (beatmapMode === "Standard" && scoreMode !== "0") { // 转谱
-            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + "(" + spinner + " spin) 的 " + scoreModeString + " 成绩：\n";
+            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的 " + scoreModeString + " 成绩：\n";
             output = output + " combo: " + combo + "\t score: " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\n";
         }
         else {
-            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + "(" + spinner + " spin) 的成绩：\n";
+            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的成绩：\n";
             output = output + combo + "/" + maxCombo + "\t " + (accuracy * 100).toFixed(2) + "%\t " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\n";
         }
 
