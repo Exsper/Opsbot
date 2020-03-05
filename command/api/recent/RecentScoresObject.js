@@ -17,7 +17,7 @@ class RecentScoresObject {
         // const name = this.score.user.name; // 只返回null
         const mapScore = parseInt(this.score.score);
         const rank = this.score.rank;
-        // const pp = this.score.pp; // 只返回null
+        const pp = this.score.pp || "0";
         // 谱面信息
         // const beatmapId = this.score.beatmap.id;
         const beatmapSetId = this.score.beatmap.beatmapSetId;
@@ -37,11 +37,11 @@ class RecentScoresObject {
 
         if (beatmapMode === "Standard" && scoreMode !== "0") { // 转谱
             if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的 " + scoreModeString + " 成绩：\n";
-            output = output + " combo: " + combo + "\t score: " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\n";
+            output = output + " combo: " + combo + "\t score: " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\t " + pp + "pp\n";
         }
         else {
             if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的成绩：\n";
-            output = output + combo + "/" + maxCombo + "\t " + (accuracy * 100).toFixed(2) + "%\t " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\n";
+            output = output + combo + "/" + maxCombo + "\t " + (accuracy * 100).toFixed(2) + "%\t " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\t " + pp + "pp\n";
         }
 
 

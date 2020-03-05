@@ -29,7 +29,7 @@ class getRecentScoresData {
         try {
             const recentScores = await osuApi.getUserRecent(argObject);
             for (let i = 0, len = recentScores.length; i < len; i++) {
-                if (recentScores[i].rank !== "F") {
+                if (recentScores[i].pp !== "0") { // pp==="0"未pass
                     let recentScoresObject = new RecentScoresObject(recentScores[i]);
                     return recentScoresObject;
                 }
