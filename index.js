@@ -12,9 +12,11 @@ module.exports.apply = (ctx, config = {}) => {
 	const ppysbBaseUrl = config.baseUrl || 'https://osu.ppy.sb/api';
 
 	// osuAPI
-	const osu = require('node-osu');
-	const osuApi = new osu.Api(ppysbToken, {
+	// https://github.com/Exsper/node-osu
+	const osu = require('node-osu-exsper');
+	const osuApi = new osu.Api(ppysbToken, ppysbToken, {
 		baseUrl: ppysbBaseUrl,
+		beatmapBaseUrl: ppysbBaseUrl,
 		notFoundAsError: true, // Throw an error on not found instead of returning nothing. (default: true)
 		completeScores: true, // When fetching scores also fetch the beatmap they are for (Allows getting accuracy) (default: false)
 		parseNumeric: false // Parse numeric values into numbers/floats, excluding ids
