@@ -2,8 +2,8 @@ const commonFunctions = require('../commonFunctions');
 
 
 class BestScoresObject {
-    constructor(scores) {
-        this.scores = scores;   // 无limit默认10个
+    constructor(scores) { // 无limit默认10个
+        this.scores = scores;
     }
 
 

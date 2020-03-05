@@ -1,56 +1,90 @@
-const commonFunctions = require('../commonFunctions');
+const utils = require('../utils');
 
 
 class ScoreObject {
-    constructor(scores) {
-        this.score = scores[0];  // scores[0]好像就是最高分数，如果有误再修改
+    constructor(score) {
+        // get_scores独有
+        this.username = score.username || "";
+        // get_user_recent/get_user_best独有
+        this.beatmap_id = score.beatmap_id || "";
+
+        // 公有
+        this.score = score.score;
+        this.maxcombo = score.maxcombo;
+        this.count50 = score.count50;
+        this.count100 = score.count100;
+        this.count300 = score.count300;
+        this.countmiss = score.countmiss;
+        this.countkatu = score.countkatu;
+        this.countgeki = score.countgeki;
+        this.perfect = score.perfect;
+        this.mods = score.enabled_mods;
+        this.userId = score.user_id;
+        this.date = score.date;
+        this.rank = score.rank;
+        this.pp = score.pp;
+
+        // 自定义
+        this.mode = -1;
+        this.acc = -1;
+        this.beatmapMaxcombo = -1;
     }
 
+    // 给转谱Score加上Score mode (0, 1, 2, 3)
+    addMode(scoreMode) {
+        this.mode = parseInt(scoreMode);
+        return this;
+    }
 
-    toString(hasBeatmap, options) {
-        let cf = new commonFunctions();
-        const accuracy = parseFloat(this.score.accuracy); // 0~1 float
-        const combo = this.score.maxCombo;
-        const mods = cf.getScoreModsString(this.score.mods);
-        const name = this.score.user.name;
-        const mapScore = parseInt(this.score.score);
-        const rank = this.score.rank;
-        const pp = this.score.pp;
-        // 谱面信息
-        // const beatmapId = this.score.beatmap.id;
-        const beatmapSetId = this.score.beatmap.beatmapSetId;
-        const beatmapMode = this.score.beatmap.mode;
-        const artist = this.score.beatmap.artist;
-        const title = this.score.beatmap.title;
-        const creator = this.score.beatmap.creator;
-        const diff = this.score.beatmap.version;
-        const maxCombo = this.score.beatmap.maxCombo;
-        // const spinner = this.score.beatmap.objects.spinner;
-        // 判断是不是转谱
-        const scoreMode = Array.isArray(options) ? options[0].m : options.m;
-        let scoreModeString = "std";
-        if (scoreMode === "1") scoreModeString = "taiko";
-        else if (scoreMode === "2") scoreModeString = "catch";
-        else if (scoreMode === "3") scoreModeString = "mania";
-
-        let output = "";
-        if (beatmapMode === "Standard" && scoreMode !== "0") { // 转谱
-            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的 " + scoreModeString + " 成绩：\n";
-            output = output + name + "\t " + " combo: " + combo + "\t score: " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\t " + pp + "pp\n";
+    // 计算acc，最好之前先addMode
+    addAcc(beatmapObject) {
+        const beatmapMode = beatmapObject.mode;
+        if (beatmapMode === 1) {
+            this.mode = 1;
+            this.beatmapMaxcombo = beatmapObject.maxCombo;
+            const total = this.count100 + this.count300 + this.countmiss;
+            this.acc = total === 0 ? 0 : (((this.count300 + this.count100 * .5) * 300) / (total * 300));
+            return this;
         }
-        else {
-            if (hasBeatmap) output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + " 的成绩：\n";
-            output = output + name + "\t " + combo + "/" + maxCombo + "\t " + (accuracy * 100).toFixed(2) + "%\t " + cf.format_number(mapScore) + "\t " + rank + "\t | " + mods.join("") + "\t " + pp + "pp\n";
+        if (beatmapMode === 2) {
+            this.mode = 2;
+            this.beatmapMaxcombo = beatmapObject.maxCombo;
+            const total = this.count50 + this.count100 + this.count300 + this.countkatu + this.countmiss;
+            this.acc = total === 0 ? 0 : ((this.count50 + this.count100 + this.count300) / total);
+            return this;
         }
-
-        return output;
+        if (beatmapMode === 3) {
+            this.mode = 3;
+            this.beatmapMaxcombo = beatmapObject.maxCombo;
+            const total = this.count50 + this.count100 + this.count300 + this.countkatu + this.countgeki + this.countmiss;
+            this.acc = total === 0 ? 0 : ((this.count50 * 50 + this.count100 * 100 + this.countkatu * 200 + (this.count300 + this.countgeki) * 300) / (total * 300));
+            return this;
+        }
+        // beatmapMode = 0
+        if (this.mode > 0) {
+            // beatmap api mode参数无效（不知道为什么），所以无法计算转谱成绩
+            return this;
+        }
+        // std，或者还没有addMode
+        this.mode = 0;
+        this.beatmapMaxcombo = beatmapObject.maxCombo;
+        const total = this.count50 + this.count100 + this.count300 + this.countkatu + this.countgeki + this.countmiss;
+        this.acc = total === 0 ? 0 : ((this.count50 * 50 + this.count100 * 100 + this.countkatu * 200 + (this.count300 + this.countgeki) * 300) / (total * 300));
+        return this;
     }
 
-    getUserName() {
-        return this.score.user.name;
+    getScoreModeString() {
+        if (this.mode <= 0) return "";
+        return utils.getModeString(this.mode);
     }
-    getScore() {
-        return parseInt(this.score.score);
+
+    toString() {
+        const name = (!this.username) ? "" : this.username + "\t ";
+        const comboString = (this.beatmapMaxcombo < 0) ? "combo: " + this.maxcombo + "\t " : this.maxcombo + "/" + this.beatmapMaxcombo + "\t ";
+        const accString = (this.acc < 0) ? "" : (this.acc * 100).toFixed(2) + "%\t ";
+        const modsString = utils.getScoreModsString(score.enabled_mods);
+        const ppString = (this.pp === "0") ? "" : this.pp + "pp";
+        return name + comboString + accString + utils.format_number(this.score) + "\t " + this.rank + "\t | " + modsString + "\t " + ppString + "\n";
     }
 
 }

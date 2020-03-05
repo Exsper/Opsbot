@@ -1,7 +1,7 @@
-class commonFunctions {
+class utils {
 
     // 整数每3位加逗号
-    format_number(n) {
+    static format_number(n) {
         var b = parseInt(n).toString();
         var len = b.length;
         if (len <= 3) { return b; }
@@ -9,17 +9,17 @@ class commonFunctions {
         return r > 0 ? b.slice(0, r) + "," + b.slice(r, len).match(/\d{3}/g).join(",") : b.slice(r, len).match(/\d{3}/g).join(",");
     }
     // 获取ss总数
-    getUserSSRanks(user) {
+    static getUserSSRanks(user) {
         return parseInt(user.counts.SS) + parseInt(user.counts.SSH);
     }
     // 获取注册天数
-    getUserDays(user) {
+    static getUserDays(user) {
         const startTime = user.joinDate.getTime();
         const endTime = new Date().getTime();
         return Math.abs(startTime - endTime) / (1000 * 60 * 60 * 24);
     }
     // 获取格式化游玩时长
-    getUserTimePlayed(user) {
+    static getUserTimePlayed(user) {
         const s = parseInt(user.secondsPlayed);
         const day = Math.floor(s / (24 * 3600)); // Math.floor()向下取整 
         const hour = Math.floor((s - day * 24 * 3600) / 3600);
@@ -27,31 +27,79 @@ class commonFunctions {
         const second = s - day * 24 * 3600 - hour * 3600 - minute * 60;
         return day + "天" + hour + "时" + minute + "分" + second + "秒";
     }
-    // 将score api返回的mods数组转为字符串
-    getScoreModsString(mods) {
+
+    // enabled_mods转为mods数组
+    static getScoreMods(enabledMods) {
+        let raw_mods = parseInt(enabledMods);
+        const Mods= {
+            'None'          : 0,
+            'NoFail'        : 1,
+            'Easy'          : 1 << 1,
+            'TouchDevice'   : 1 << 2,
+            'Hidden'        : 1 << 3,
+            'HardRock'      : 1 << 4,
+            'SuddenDeath'   : 1 << 5,
+            'DoubleTime'    : 1 << 6,
+            'Relax'         : 1 << 7,
+            'HalfTime'      : 1 << 8,
+            'Nightcore'     : 1 << 9, // DoubleTime
+            'Flashlight'    : 1 << 10,
+            'Autoplay'      : 1 << 11,
+            'SpunOut'       : 1 << 12,
+            'Relax2'        : 1 << 13, // Autopilot
+            'Perfect'       : 1 << 14, // SuddenDeath
+            'Key4'          : 1 << 15,
+            'Key5'          : 1 << 16,
+            'Key6'          : 1 << 17,
+            'Key7'          : 1 << 18,
+            'Key8'          : 1 << 19,
+            'FadeIn'        : 1 << 20,
+            'Random'        : 1 << 21,
+            'Cinema'        : 1 << 22,
+            'Target'        : 1 << 23,
+            'Key9'          : 1 << 24,
+            'KeyCoop'       : 1 << 25,
+            'Key1'          : 1 << 26,
+            'Key3'          : 1 << 27,
+            'Key2'          : 1 << 28,
+            'KeyMod'        : 521109504,
+            'FreeModAllowed': 522171579,
+            'ScoreIncreaseMods': 1049662
+        };
+		let modsArr = [];
+		for (const mod in Mods) {
+			if (raw_mods & Mods[mod]) modsArr.push(mod);
+        }
+        return modsArr;
+    }
+
+    // enabled_mods转为字符串
+    static getScoreModsString(enabledMods) {
+        const modsArr = this.getScoreMods(enabledMods);
+        // 只需要把常用的提取出来就好了
         let abbMods = [];
         for (let i = 0; i < mods.length; i++) {
-            if (mods[i] === "Hidden") abbMods.push("HD");
-            else if (mods[i] === "HardRock") abbMods.push("HR");
-            else if (mods[i] === "DoubleTime") abbMods.push("DT");
-            else if (mods[i] === "Nightcore") abbMods.push("NC");
-            else if (mods[i] === "Flashlight") abbMods.push("FL");
-            else if (mods[i] === "Easy") abbMods.push("EZ");
-            else if (mods[i] === "HalfTime") abbMods.push("HT");
-            else if (mods[i] === "NoFail") abbMods.push("NF");
-            else if (mods[i] === "SpunOut") abbMods.push("SO");
-            //else if (mods[i] === "TouchDevice") abbMods.push("TD");
-            else if (mods[i] === "KeyMod") abbMods.push("KeyMod");
+            if (modsArr[i] === "Hidden") abbMods.push("HD");
+            else if (modsArr[i] === "HardRock") abbMods.push("HR");
+            else if (modsArr[i] === "DoubleTime") abbMods.push("DT");
+            else if (modsArr[i] === "Nightcore") abbMods.push("NC");
+            else if (modsArr[i] === "Flashlight") abbMods.push("FL");
+            else if (modsArr[i] === "Easy") abbMods.push("EZ");
+            else if (modsArr[i] === "HalfTime") abbMods.push("HT");
+            else if (modsArr[i] === "NoFail") abbMods.push("NF");
+            else if (modsArr[i] === "SpunOut") abbMods.push("SO");
+            //else if (modsArr[i] === "TouchDevice") abbMods.push("TD");
+            else if (modsArr[i] === "KeyMod") abbMods.push("KeyMod");
         }
         //有NC时去掉DT
-        let indexDT = abbMods.indexOf("DT");
-        let indexNC = abbMods.indexOf("NC");
+        const indexDT = abbMods.indexOf("DT");
+        const indexNC = abbMods.indexOf("NC");
         if (indexNC >= 0) abbMods.splice(indexDT, 1);
-        return abbMods;
+        return abbMods.join("");
     }
 
     // 计算mods数值（指令+号后面的）
-    getScoreMods(modsString) {
+    static getEnabledModsValue(modsString) {
         let mods = {
             //None : 0,
             NF: 1,
@@ -105,7 +153,7 @@ class commonFunctions {
     }
 
     // String转mode
-    getMode(modeString) {
+    static getMode(modeString) {
         let s = modeString.trim().toLowerCase();
         if (s === "0" || s === "1" || s === "2" || s === "3") return s;
         else if (s.indexOf("std") >= 0) return "0";
@@ -127,19 +175,28 @@ class commonFunctions {
         //else return s;
         else return "0";
     }
-    // mode转String
-    getModeString(mode) {
+    // mode转string
+    static getModeString(mode) {
         if (mode === "0") return "Standard";
         else if (mode === "1") return "Taiko";
         else if (mode === "2") return "Catch The Beat";
         else if (mode === "3") return "Mania";
-        //else return s;
         else return "未知";
     }
-
+    // approved状态转string
+    static getApprovedString(approved) {
+        if (approved === "4") return "loved";
+        else if (approved === "3") return "qualified";
+        else if (approved === "2") return "approved";
+        else if (approved === "1") return "ranked";
+        else if (approved === "0") return "pending";
+        else if (approved === "-1") return "WIP";
+        else if (approved === "-2") return "graveyard";
+        else return "未知";
+    }
 
 
 }
 
 
-module.exports = commonFunctions;
+module.exports = utils;

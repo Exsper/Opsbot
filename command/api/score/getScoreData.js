@@ -1,44 +1,80 @@
 const ScoreObject = require("./ScoreObject");
+const getBeatmapData = require("../beatmap/getBeatmapData");
+const utils = require('../utils');
 
 
 class getScoreData {
-    async getScoreObject(osuApi, argObject) {
-        try {
-            const scores = await osuApi.getScores(argObject);
-            let scoreObject = new ScoreObject(scores);
-            return scoreObject;
-        }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
+    async getScoreObjects(osuApi, argObject) {
+        const scores = await osuApi.getScores(argObject);
+        if (scores.code === "404") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        if (scores.code === "error") return "获取成绩出错 " + JSON.stringify(argObject) + "\n";
+        if (scores.length <= 0) return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        let scoreObjects = scores.map(item => { new ScoreObject(item); });
+        return scoreObjects;
     }
 
-    async getData(osuApi, argObjects) {
+    async output(osuApi, argObjects) {
         let scoreObjects = [];
         for (let i = 0, len = argObjects.length; i < len; i++) {
-            let item = await this.getScoreObject(osuApi, argObjects[i]);
-            scoreObjects.push(item);
+            let items = await this.getScoreObjects(osuApi, argObjects[i]);
+            if (typeof items !== "string") scoreObjects.push(items);
         }
+        if (scoreObjects.length <= 0) return "找不到成绩" + JSON.stringify(argObjects) + "\n";
+
+        // 获取beatmapObject
+        let beatmapArgObject = {};
+        if (scoreObjects[0].beatmap_id) beatmapArgObject.b = beatmap_id;
+        else if (argObjects.b) beatmapArgObject.b = argObjects.b;
+        if (argObjects.m) beatmapArgObject.m = argObjects.m;
+        if (argObjects.a) beatmapArgObject.a = argObjects.a;
+
         let output = "";
-        output = output + scoreObjects[0].toString(true, argObjects[0]);
-        for (let i = 1, len = scoreObjects.length; i < len; i++) {
-            if (typeof scoreObjects[i] === "string") output = output + scoreObjects[i]; // 报错消息
-            else output = output + scoreObjects[i].toString(false, argObjects[i]);
+        // 获取acc
+        if (beatmapArgObject.b) {
+            const beatmapObject = new getBeatmapData().getBeatmapObject(osuApi, beatmapArgObject);
+            for (let i = 0, len = scoreObjects.length; i < len; i++) {
+                if (beatmapArgObject.m) scoreObjects[i].addMode(beatmapArgObject.m);
+                scoreObjects[i].addAcc(beatmapObject);
+            }
+            if (scoreObjects[0].mode >= 0) output = output + beatmapObject.toScoreTitle(utils.getModeString(scoreObjects[0].mode));
+            else output = output + beatmapObject.toScoreTitle();
+        }
+
+        for (let i = 0, len = scoreObjects.length; i < len; i++) {
+            output = output + scoreObjects[i].toString();
         }
         return output;
     }
 
-    async getTopData(osuApi, argObjects) {
-        // limit = 1 即为最高分
+    async outputTop(osuApi, argObjects) {
+        // limit = 1 即为最高pp
         argObjects[0].limit = 1;
-        let scoreObject = await this.getScoreObject(osuApi, argObjects[0]);
-        if (typeof scoreObject === "string") return scoreObject; // 报错消息
-        return scoreObject.toString(true, argObjects[0]);
+        let scoreObjects = await this.getScoreObject(osuApi, argObjects[0]);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+        let scoreObject = scoreObjects[0];
+        // 获取beatmapObject
+        let beatmapArgObject = {};
+        if (scoreObject.beatmap_id) beatmapArgObject.b = beatmap_id;
+        else if (argObjects.b) beatmapArgObject.b = argObjects.b;
+        if (argObjects.m) beatmapArgObject.m = argObjects.m;
+        if (argObjects.a) beatmapArgObject.a = argObjects.a;
+
+        let output = "";
+        // 获取acc
+        if (beatmapArgObject.b) {
+            const beatmapObject = new getBeatmapData().getBeatmapObject(osuApi, beatmapArgObject);
+            if (beatmapArgObject.m) scoreObject.addMode(beatmapArgObject.m);
+            scoreObject.addAcc(beatmapObject);
+            if (scoreObject.mode >= 0) output = output + beatmapObject.toScoreTitle(utils.getModeString(scoreObject.mode));
+            else output = output + beatmapObject.toScoreTitle();
+        }
+
+        output = output + scoreObject.toString();
+        return output;
     }
 
+    // 按pp排列的排行，比较top分数毫无意义
+    /*
     async getVsTopData(osuApi, argObjects) {
         let yourArgObjects = argObjects[0];
         let yourScoreObject = await this.getScoreObject(osuApi, yourArgObjects);
@@ -69,6 +105,7 @@ class getScoreData {
         }
         return output;
     }
+    */
 
 }
 

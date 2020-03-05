@@ -1,40 +1,42 @@
+const utils = require("../utils");
+
 class BeatmapObject {
-    constructor(beatmaps) {
-        this.beatmap = beatmaps[0];
+    constructor(beatmap) {
+        this.beatmapId = beatmap.beatmap_id;
+        this.beatmapSetId = beatmap.beatmapset_id;
+        this.mode = beatmap.mode;
+        this.beatmapMode = utils.getModeString(beatmap.mode);
+        this.artist = beatmap.artist;
+        this.title = beatmap.title;
+        // this.creator = beatmap.creator; ppy.sb为空值
+        this.diff = beatmap.version;
+        this.approved = utils.getApprovedString(beatmap.approved);
+
+        this.bpm = beatmap.bpm;
+        this.length = beatmap.hit_length;
+        this.maxCombo = beatmap.max_combo;
+        this.cs = beatmap.diff_size;
+        this.ar = beatmap.diff_approach;
+        this.od = beatmap.diff_overall;
+        this.hp = beatmap.diff_drain;
+        this.stars = beatmap.difficultyrating;
     }
 
-
     toString() {
-        // TODO pp计算
-        // TODO 带mod的谱面四维计算
-        const beatmapId = this.beatmap.id;
-        const beatmapSetId = this.beatmap.beatmapSetId;
-        const beatmapMode = this.beatmap.mode;
-        const artist = this.beatmap.artist;
-        const title = this.beatmap.title;
-        const creator = this.beatmap.creator;
-        const diff = this.beatmap.version;
-        const approved = this.beatmap.approvalStatus;
-
-        const bpm = this.beatmap.bpm;
-        const maxCombo = this.beatmap.maxCombo;
-        // const spinner = this.beatmap.objects.spinner;
-        const cs = this.beatmap.difficulty.size;
-        const ar = this.beatmap.difficulty.approach;
-        const od = this.beatmap.difficulty.overall;
-        const hp = this.beatmap.difficulty.drain;
-        const stars = this.beatmap.difficulty.rating;
-
         let output = "";
 
-        output = output + "谱面 " + beatmapSetId + " " + artist + " - " + title + "(" + creator + ")[" + diff + "] " + "\n";
-        output = output + "模式： " + beatmapMode + " 状态： " + approved + "\n";
-        output = output + "CS" + cs + "  AR" + ar + "  OD" + od + "  HP" + hp + "  BPM: " + bpm + " stars: " + stars + "\n";
-        output = output + "max Combo： " + maxCombo + "\n";
+        output = output + "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + "\n";
+        output = output + "模式： " + this.beatmapMode + " 状态： " + this.approved + "\n";
+        output = output + "CS" + this.cs + "  AR" + this.ar + "  OD" + this.od + "  HP" + this.hp + "  BPM: " + this.bpm + " stars: " + this.stars + "\n";
+        output = output + "max Combo： " + this.maxCombo + "\n";
 
         output = output + "\n";
-        output = output + "http://osu.ppy.sh/b/" + beatmapId;
+        output = output + "http://osu.ppy.sh/b/" + this.beatmapId;
         return output;
+    }
+
+    toScoreTitle(scoreModeString = this.beatmapMode) {
+        let output = output + "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + " 的" + scoreModeString + "成绩：\n";
     }
 }
 

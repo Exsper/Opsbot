@@ -4,8 +4,7 @@
   "description": "Another ppy.sb qq-bot plugin of koishi",
   "main": "index.js",
   "dependencies": {
-    "nedb": "^1.8.0",
-    "node-osu-exsper": "github:exsper/node-osu"
+    "nedb": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
