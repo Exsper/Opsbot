@@ -43,7 +43,7 @@ class Command {
         let args = {};
         for (let i = 1; i < mr.length; ++i) {
             let key = this.commandInfo.args[i];
-            if (mr[i] === undefined || mr[i] === "null") {
+            if (mr[i] === undefined || mr[i] === "null" || mr[i].trim() === "") {
                 if (!this.commandInfo.argsFromUserInfo[i]) continue;
                 let value = "";
                 if (userOsuInfo.osuId > 0 && this.commandInfo.args[i] === "u") value = userOsuInfo.osuId;
@@ -55,7 +55,7 @@ class Command {
                 Object.assign(args, { [key]: mr[i].trim() });
             }
         }
-        if (args.u === "me") args.u = userOsuInfo.osuId;
+        if (args.u.trim() === "me") args.u = userOsuInfo.osuId;
         let user = [args.u, args.u2];
         user = user.filter(item => item); // 去除空值
         return new ApiOptions(args.b, user, args.limit, args.mods, args.m);
