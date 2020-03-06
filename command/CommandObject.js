@@ -51,7 +51,7 @@ class CommandObject {
         const argsString = this.getCommandArgsString(commandString);
         // 帮助
         if (commandString === "help") {
-            if (!argsString) return "输入 " + commandsInfo.prefix + "help + 具体指令 来查看指令功能";
+            if (!argsString) return "基本指令：b/u/s/t/vs/vstop/bp/bbp/r/rrx/pr/prrx/set/unset/mode\n输入 " + commandsInfo.prefix + "help + 具体指令 来查看指令功能";
             let command = this.getCommandInfoFromApi(commandsInfo, argsString);
             if (!command.isCommand) command = this.getCommandInfoFromBot(commandsInfo, argsString);
             if (!command.isCommand) return "未实现的指令：" + argsString;
