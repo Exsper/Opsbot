@@ -1,8 +1,6 @@
-// nodejs用不了es6模块，好气哦
-
-function CommandsInfo() {
-    this.prefix = '$';
-    this.prefix2 = '￥';
+function CommandsInfo(prefix = '$', prefix2 = '￥') {
+    this.prefix = prefix;
+    this.prefix2 = prefix2;
     this.help = {
         args: "[]中的参数为必要参数，()中的参数为可选参数\n",
         userName: "绑定后username可以使用'me'替代或直接省略，纯数字id可以尝试在名字前后加上\"号\n"
@@ -17,7 +15,9 @@ function CommandsInfo() {
         best: 'apibest',
         bestList: 'apibestList',
         recent: 'apirecent',
-        recentPassed: 'apirecentPassed'
+        recentRx: 'apirecentRx',
+        recentPassed: 'apirecentPassed',
+        recentPassedRx: 'apirecentPassedRx'
     };
     this.apiCommands = [
         {
@@ -30,8 +30,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, true, false, false],    // mode 不要指定模式
             reg: /^([0-9]+)[\+]?([a-zA-Z0-9]+)?[:：]?(.+)?/i,
             note: this.help.args
-        },
-        {
+        }, {
             info: '玩家查询',
             command: ['u', 'user', 'p', 'player', 'stat', 'statme', 'ume'],
             type: this.apiType.user,
@@ -41,8 +40,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, true, true],
             reg: /^([^:+#]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
             info: '谱面成绩查询',
             command: ['s', 'score', 'me', 'sme', 'scoreme'],
             type: this.apiType.score,
@@ -52,8 +50,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false, true, false, true],
             reg: /^([0-9]+)([^:+#]+)?[\+]?([a-zA-Z0-9]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
             info: '谱面最高成绩查询',
             command: ['t', 'top'],
             type: this.apiType.scoreTop,
@@ -63,8 +60,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false, false, true],
             reg: /^([0-9]+)[\+]?([a-zA-Z0-9]+)?[:：]?(.+)?/i,
             note: this.help.args
-        },
-        {
+        }, {
             info: '谱面成绩vs查询',   // 暂时只做了2人对比，多人应该只要改一下正则就好了
             command: ['vs', 'svs', 'scorevs'],
             type: this.apiType.scoreVs,
@@ -74,8 +70,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false, true, false, false, true],
             reg: /^([0-9]+)([^:+#\|]+)?\|([^:+#\|]+)[\+]?([a-zA-Z0-9]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
             info: '谱面成绩vstop查询',
             command: ['vstop', 'topvs'],
             type: this.apiType.scoreVsTop,
@@ -85,8 +80,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false, true, false, true],
             reg: /^([0-9]+)([^:+#]+)?[\+]?([a-zA-Z0-9]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
             info: 'bp成绩查询',
             command: ['bp', 'best', 'bpme'],
             type: this.apiType.best,
@@ -96,8 +90,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, true, false, true],
             reg: /^([^:+#]+)?[#]([0-9]+)[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
             info: 'bp列表查询',
             command: ['bbp', 'bests', 'mybp'],
             type: this.apiType.bestList,
@@ -107,8 +100,17 @@ function CommandsInfo() {
             argsFromUserInfo: [false, true, true],
             reg: /^([^:+#]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
+            info: '获取最近Relax成绩（包括未pass成绩）',
+            command: ['rrx', 'rctrx', 'rctpprx', 'recentrx'],
+            type: this.apiType.recentRx,
+            //api: 'getUserRecent',
+            argsInfo: '(user_id/"username")(:mode)',
+            args: ['orgArgs', 'u', 'm'],
+            argsFromUserInfo: [false, true, true],
+            reg: /^([^:+#]+)?[:：]?(.+)?/i,
+            note: this.help.args + this.help.userName
+        }, {
             info: '获取最近成绩（包括未pass成绩）',
             command: ['r', 'rct', 'rctpp', 'recent'],
             type: this.apiType.recent,
@@ -118,8 +120,17 @@ function CommandsInfo() {
             argsFromUserInfo: [false, true, true],
             reg: /^([^:+#]+)?[:：]?(.+)?/i,
             note: this.help.args + this.help.userName
-        },
-        {
+        }, {
+            info: '获取最近Relax成绩（不包括未pass成绩）',
+            command: ['prrx'],
+            type: this.apiType.recentPassedRx,
+            //api: 'getUserRecent',
+            argsInfo: '(user_id/"username")(:mode)',
+            args: ['orgArgs', 'u', 'm'],
+            argsFromUserInfo: [false, true, true],
+            reg: /^([^:+#]+)?[:：]?(.+)?/i,
+            note: this.help.args + this.help.userName
+        }, {
             info: '获取最近成绩（不包括未pass成绩）',
             command: ['pr'],
             type: this.apiType.recentPassed,
@@ -146,8 +157,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false, false],
             reg: /^([^:+#]+)[:：]?(.+)?/i,
             note: ""
-        },
-        {
+        }, {
             info: '解绑osu账号',
             command: ['unbind', 'unset'],
             type: this.botCommandType.unbind,
@@ -156,8 +166,7 @@ function CommandsInfo() {
             argsFromUserInfo: [false, false],
             reg: /^(.*)/i,
             note: ""
-        },
-        {
+        }, {
             info: '设置默认mode',
             command: ['mode'],
             type: this.botCommandType.mode,

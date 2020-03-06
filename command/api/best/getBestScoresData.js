@@ -1,54 +1,34 @@
-const BestScoresObject = require("./BestScoresObject");
-
+const ScoreObject = require("../score/ScoreObject");
+const getScoreData = require("../score/getScoreData");
 
 class getBestScoresData {
     async getBestScoresObject(osuApi, argObject) {
-        try {
-            const bestScores = await osuApi.getUserBest(argObject);
-            let bestScoresObject = new BestScoresObject(bestScores);
-            return bestScoresObject;
-        }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
+        const scores = await osuApi.getUserBest(argObject);
+        if (scores.code === "404") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        if (scores.code === "error") return "获取成绩出错 " + JSON.stringify(argObject) + "\n";
+        if (scores.length <= 0) return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        let scoreObjects = scores.map(item => { return new ScoreObject(item); });
+        return scoreObjects;
     }
 
-    async getData(osuApi, argObjects) {
-        if (argObjects[0].limit === undefined) argObjects[0].limit = 5; // 设置为bp5，以减轻获取工作
-        let bestScoresObject = await this.getBestScoresObject(osuApi, argObjects[0]);
-        return bestScoresObject.toString(true, argObjects);
+    async outputBestList(osuApi, argObject) {
+        if (argObject.limit === undefined) argObject.limit = "5"; // 设置为bp5，以减轻获取工作
+        let scoreObjects = await this.getBestScoresObject(osuApi, argObject);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+
+        return await new getScoreData().getAndOutputBeatmapsAndScoresString(osuApi, scoreObjects, argObject);
     }
 
 
-    async getOneBestScoreObject(osuApi, argObject) {
-        try {
-            // 避免每个bp都要获取beatmap，所以不采用osuApi.getUserBest
-            const bestScores = await osuApi.apiCall('/get_user_best', argObject);
-            const bestScore = bestScores.pop();
-            let scoreArgObject = argObject;
-            scoreArgObject.b = bestScore.beatmap_id;
-            scoreArgObject.mods = bestScore.enabled_mods;
-            delete scoreArgObject.limit;
-            const bestScoreWithBeatmap = await osuApi.getScores(scoreArgObject);
-            let bestScoresObject = new BestScoresObject(bestScoreWithBeatmap);
-            return bestScoresObject;
-        }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
-    }
+    async outputBest(osuApi, argObject) {
+        // bp几=设置limit参数，取最后一个
+        let scoreObjects = await this.getBestScoresObject(osuApi, argObject);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+        if (parseInt(argObject.limit) > scoreObjects.length) return "超出bp范围";
+        let scoreObject = scoreObjects.pop();
 
-    async getOneData(osuApi, argObjects) {
-        let bestScoreObject = await this.getOneBestScoreObject(osuApi, argObjects[0]);
-        return bestScoreObject.toString(true, argObjects);
+        return await new getScoreData().getAndOutputBeatmapsAndScoresString(osuApi, scoreObject, argObject);
     }
-
 
 }
 

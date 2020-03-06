@@ -1,56 +1,59 @@
-const RecentScoresObject = require("./RecentScoresObject");
+const ScoreObject = require("../score/ScoreObject");
+const getScoreData = require("../score/getScoreData");
 
 
 class getRecentScoresData {
-    async getRecentScoreObject(osuApi, argObject) {
-        try {
-            // recent太多可能会卡顿，但由于recent可能不是最高分数，用getScore也不行
-            // 所以只好放弃limit，只取最近一次的成绩
-            const recentScores = await osuApi.getUserRecent(argObject);
-            let recentScoresObject = new RecentScoresObject(recentScores[0]);
-            return recentScoresObject;
-        }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
+    async getRecentScoreObject(osuApi, argObject, isRelax = false) {
+        const scores = (isRelax) ? await osuApi.getUserRecentRx(argObject) : await osuApi.getUserRecent(argObject);
+        if (scores.code === "404") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        if (scores.code === "error") return "获取成绩出错 " + JSON.stringify(argObject) + "\n";
+        if (scores.length <= 0) return "找不到成绩 " + JSON.stringify(argObject) + "\n";
+        let scoreObjects = scores.map(item => { return new ScoreObject(item); });
+        return scoreObjects;
     }
 
-    async getData(osuApi, argObjects) {
-        argObjects[0].limit = 1;
-        let recentScoreObject = await this.getRecentScoreObject(osuApi, argObjects[0]);
-        return recentScoreObject.toString(true, argObjects);
+    async outputRecentest(osuApi, argObject) {
+        argObject.limit = 1;
+        let scoreObjects = await this.getRecentScoreObject(osuApi, argObject);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+
+        return await new getScoreData().getAndOutputBeatmapAndScoresString(osuApi, scoreObjects, argObject);
+    }
+
+    async outputRecentestRx(osuApi, argObject) {
+        argObject.limit = 1;
+        let scoreObjects = await this.getRecentScoreObject(osuApi, argObject, true);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+
+        return await new getScoreData().getAndOutputBeatmapAndScoresString(osuApi, scoreObjects, argObject);
     }
 
 
-    async getRecentPassedScoreObject(osuApi, argObject) {
-        try {
-            const recentScores = await osuApi.getUserRecent(argObject);
-            for (let i = 0, len = recentScores.length; i < len; i++) {
-                if (recentScores[i].pp !== "0") { // pp==="0"未pass
-                    let recentScoresObject = new RecentScoresObject(recentScores[i]);
-                    return recentScoresObject;
-                }
+    async getRecentestPassed(osuApi, argObject) {
+        let scoreObjects = await this.getRecentScoreObject(osuApi, argObject);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+        let hasPassedScore = false;
+        for (let i = 0, len = scoreObjects.length; i < len; i++) {
+            if (scoreObjects[i].pp !== "0") { // pp==="0"未pass
+                hasPassedScore = true;
+                return await new getScoreData().getAndOutputBeatmapAndScoresString(osuApi, scoreObjects[i], argObject);
             }
-            throw "Not found";
         }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到成绩 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
+        if (!hasPassedScore) return "找不到最近的pass成绩";
     }
 
-    async getPassedData(osuApi, argObjects) {
-        argObjects[0].limit = 10;   // 只从最近10个里找，减少工作量
-        let recentScoreObject = await this.getRecentPassedScoreObject(osuApi, argObjects[0]);
-        return recentScoreObject.toString(true, argObjects);
+    async getRecentestPassedRx(osuApi, argObject) {
+        let scoreObjects = await this.getRecentScoreObject(osuApi, argObject, true);
+        if (typeof scoreObjects === "string") return scoreObjects; // 报错消息
+        let hasPassedScore = false;
+        for (let i = 0, len = scoreObjects.length; i < len; i++) {
+            if (scoreObjects[i].pp !== "0") { // pp==="0"未pass
+                hasPassedScore = true;
+                return await new getScoreData().getAndOutputBeatmapAndScoresString(osuApi, scoreObjects[i], argObject);
+            }
+        }
+        if (!hasPassedScore) return "找不到最近上传的Relax成绩";
     }
-
-
 
 }
 

@@ -3,30 +3,17 @@ const UserObject = require("./UserObject");
 
 class getUserData {
     async getUserObject(osuApi, argObject) {
-        try {
-            const user = await osuApi.getUser(argObject); // user不是数组
-            let usersObject = new UserObject(user);
-            return usersObject;
-        }
-        catch (ex) {
-            if (argObject) delete argObject.k; // 不显示token
-            if (ex.message === "Not found") return "找不到玩家 " + JSON.stringify(argObject) + "\n";
-            console.log("从Osu!api获取数据出错\n" + ex.message);
-            return "从Osu!api获取数据出错\n";
-        }
+        const user = await osuApi.getUser(argObject);
+        if (user.code === "404") return "找不到玩家 " + JSON.stringify(argObject) + "\n";
+        if (user.code === "error") return "获取玩家出错 " + JSON.stringify(argObject) + "\n";
+        if (user.length <= 0) return "找不到玩家 " + JSON.stringify(argObject) + "\n";
+        return new UserObject(user[0]);
     }
 
-    async getData(osuApi, argObjects) {
-        let userObject = await this.getUserObject(osuApi, argObjects[0]);
+    async outputUser(osuApi, argObject) {
+        let userObject = await this.getUserObject(osuApi, argObject);
         return userObject.toString();
     }
-
-    async getOrgData(osuApi, argObjects) {
-        let args = Array.isArray(argObjects) ? argObjects[0] : argObjects;
-        let userObject = await this.getUserObject(osuApi, args);
-        return userObject;
-    }
-
 }
 
 module.exports = getUserData;

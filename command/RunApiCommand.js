@@ -10,23 +10,27 @@ class RunApiCommand {
         // 下达任务
         const commandsInfo = new CommandsInfo();
         if (command.commandType === commandsInfo.apiType.beatmap)
-            return await new getBeatmapData().getData(osuApi, argObjects);
+            return await new getBeatmapData().outputBeatmap(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.user)
-            return await new getUserData().getData(osuApi, argObjects);
+            return await new getUserData().outputUser(osuApi, argObjects[0]);
         else if ((command.commandType === commandsInfo.apiType.score) || (command.commandType === commandsInfo.apiType.scoreVs))
-            return await new getScoreData().getData(osuApi, argObjects);
+            return await new getScoreData().outputScores(osuApi, argObjects);
         else if (command.commandType === commandsInfo.apiType.scoreTop)
-            return await new getScoreData().getTopData(osuApi, argObjects);
+            return await new getScoreData().outputTopScore(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.scoreVsTop)
-            return await new getScoreData().getVsTopData(osuApi, argObjects);
+            return await new getScoreData().outputVsTopScore(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.bestList)
-            return await new getBestScoresData().getData(osuApi, argObjects);
+            return await new getBestScoresData().outputBestList(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.best)
-            return await new getBestScoresData().getOneData(osuApi, argObjects);
+            return await new getBestScoresData().outputBest(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.recent)
-            return await new getRecentScoresData().getData(osuApi, argObjects);
+            return await new getRecentScoresData().outputRecentest(osuApi, argObjects[0]);
         else if (command.commandType === commandsInfo.apiType.recentPassed)
-            return await new getRecentScoresData().getPassedData(osuApi, argObjects);
+            return await new getRecentScoresData().getRecentestPassed(osuApi, argObjects[0]);
+        else if (command.commandType === commandsInfo.apiType.recentRx)
+            return await new getRecentScoresData().outputRecentestRx(osuApi, argObjects[0]);
+        else if (command.commandType === commandsInfo.apiType.recentPassedRx)
+            return await new getRecentScoresData().getRecentestPassedRx(osuApi, argObjects[0]);
         else return ""; // 未知指令
     }
 }

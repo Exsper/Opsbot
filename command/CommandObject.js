@@ -11,16 +11,6 @@ class CommandObject {
         this.botClass = "bot";
     }
 
-    /*
-    getCommandPrefixIndex(commandsInfo) {
-        return this.msg.indexOf(commandsInfo.prefix);
-    }
-
-    getCommandBase(commandsInfo) {
-        return this.msg.split(" ")[0].trim().substring(commandsInfo.prefix.length);
-    }
-    */
-
     getCommandArgsString(commandString) {
         const startIndex = this.msg.indexOf(commandString) + commandString.length;
         if (startIndex >= this.msg.length) return null;
@@ -53,15 +43,10 @@ class CommandObject {
 
 
 
-    async execute(osuApi, userOsuInfo, nedb) {
-        const commandsInfo = new CommandsInfo()
-        /*
-        const prefixIndex = this.getCommandPrefixIndex(commandsInfo);
-        if (prefixIndex !== 0) return "";
-        */
+    async execute(osuApi, userOsuInfo, nedb, prefix, prefix2) {
+        const commandsInfo = new CommandsInfo(prefix, prefix2)
         const msgPrefix = this.msg.substring(0,1);
         if ((msgPrefix !== commandsInfo.prefix) && (msgPrefix !== commandsInfo.prefix2)) return "";
-        //const commandString = this.getCommandBase(commandsInfo);
         const commandString = this.msg.split(" ")[0].trim().substring(1);
         const argsString = this.getCommandArgsString(commandString);
         // 帮助

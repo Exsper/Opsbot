@@ -1,5 +1,5 @@
 const getUserData = require("../command/api/user/getUserData");
-const commonFunctions = require("../command/api/commonFunctions");
+const utils = require('../command/api/utils');
 
 class UserInfo {
     constructor(meta) {
@@ -26,12 +26,12 @@ class UserInfo {
     }
 
     async getOsuIdName(osuApi, osuInfo, mode = "0") {
-        let userData = await new getUserData().getOrgData(osuApi, { u: osuInfo, m: mode });
+        let userData = await new getUserData().getUserObject(osuApi, { u: osuInfo, m: mode });
         if (!userData) return null;
         if (typeof userData === 'string') return null;
         let userOsuInfo = {}
-        userOsuInfo.osuId = userData.user.id;
-        userOsuInfo.osuName = userData.user.name;
+        userOsuInfo.osuId = userData.userId;
+        userOsuInfo.osuName = userData.username;
         return userOsuInfo;
     }
 
@@ -60,8 +60,7 @@ class UserInfo {
     }
 
     async bind(osuApi, nedb, qqId, osuInfo, mode = "0") {
-        let cf = new commonFunctions();
-        mode = cf.getMode(mode);
+        mode = utils.getMode(mode);
         // 检查原先有没有记录
         let res = await nedb.findOne({ qqId: qqId });
         if (res) {
@@ -87,15 +86,14 @@ class UserInfo {
     }
 
     async mode(nedb, qqId, mode) {
-        let cf = new commonFunctions();
-        mode = cf.getMode(mode);
+        mode = utils.getMode(mode);
         let res = await nedb.findOne({ qqId: qqId });
         if (!res) return "请先绑定osu账号再设置默认游戏模式";
         let numAffected = await nedb.update({ qqId: qqId }, { $set: { defaultMode: mode } });
         if (numAffected <= 0) return "设置默认游戏模式失败";
         else {
             if (numAffected > 1) console.log("Warning: 设置了 " + numAffected + " 个 " + qqId + " 的默认游戏模式")
-            return "设置默认游戏模式成功：" + cf.getModeString(mode);
+            return "设置默认游戏模式成功：" + utils.getModeString(mode);
         }
     }
 
