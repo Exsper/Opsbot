@@ -10,8 +10,8 @@ class getBeatmapData {
         return new BeatmapObject(beatmaps[0]);
     }
 
-    async output(osuApi, argObjects) {
-        let beatmapObject = await this.getBeatmapObject(osuApi, argObjects[0]);
+    async outputBeatmap(osuApi, argObject) {
+        let beatmapObject = await this.getBeatmapObject(osuApi, argObject);
         return beatmapObject.toString();
     }
 }

@@ -11,12 +11,12 @@ class ScoreObject {
         // 公有
         this.score = score.score;
         this.maxcombo = score.maxcombo;
-        this.count50 = score.count50;
-        this.count100 = score.count100;
-        this.count300 = score.count300;
-        this.countmiss = score.countmiss;
-        this.countkatu = score.countkatu;
-        this.countgeki = score.countgeki;
+        this.count50 = parseInt(score.count50);
+        this.count100 = parseInt(score.count100);
+        this.count300 = parseInt(score.count300);
+        this.countmiss = parseInt(score.countmiss);
+        this.countkatu = parseInt(score.countkatu);
+        this.countgeki = parseInt(score.countgeki);
         this.perfect = score.perfect;
         this.mods = score.enabled_mods;
         this.userId = score.user_id;
@@ -30,9 +30,9 @@ class ScoreObject {
         this.beatmapMaxcombo = -1;
     }
 
-    // 给转谱Score加上Score mode (0, 1, 2, 3)
+    // 给转谱Score加上Score mode ("0", "1", "2", "3")
     addMode(scoreMode) {
-        this.mode = parseInt(scoreMode);
+        this.mode = scoreMode;
         return this;
     }
 
@@ -80,9 +80,9 @@ class ScoreObject {
 
     toString() {
         const name = (!this.username) ? "" : this.username + "\t ";
-        const comboString = (this.beatmapMaxcombo < 0) ? "combo: " + this.maxcombo + "\t " : this.maxcombo + "/" + this.beatmapMaxcombo + "\t ";
+        const comboString = (this.beatmapMaxcombo < 0) ? "combo: " + this.maxcombo + "\t " : this.maxcombo + "x/" + this.beatmapMaxcombo + "x\t ";
         const accString = (this.acc < 0) ? "" : (this.acc * 100).toFixed(2) + "%\t ";
-        const modsString = utils.getScoreModsString(score.enabled_mods);
+        const modsString = utils.getScoreModsString(this.mods);
         const ppString = (this.pp === "0") ? "" : this.pp + "pp";
         return name + comboString + accString + utils.format_number(this.score) + "\t " + this.rank + "\t | " + modsString + "\t " + ppString + "\n";
     }

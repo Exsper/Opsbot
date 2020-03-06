@@ -8,26 +8,6 @@ class utils {
         var r = len % 3;
         return r > 0 ? b.slice(0, r) + "," + b.slice(r, len).match(/\d{3}/g).join(",") : b.slice(r, len).match(/\d{3}/g).join(",");
     }
-    // 获取ss总数
-    static getUserSSRanks(user) {
-        return parseInt(user.counts.SS) + parseInt(user.counts.SSH);
-    }
-    // 获取注册天数
-    static getUserDays(user) {
-        const startTime = user.joinDate.getTime();
-        const endTime = new Date().getTime();
-        return Math.abs(startTime - endTime) / (1000 * 60 * 60 * 24);
-    }
-    // 获取格式化游玩时长
-    static getUserTimePlayed(user) {
-        const s = parseInt(user.secondsPlayed);
-        const day = Math.floor(s / (24 * 3600)); // Math.floor()向下取整 
-        const hour = Math.floor((s - day * 24 * 3600) / 3600);
-        const minute = Math.floor((s - day * 24 * 3600 - hour * 3600) / 60);
-        const second = s - day * 24 * 3600 - hour * 3600 - minute * 60;
-        return day + "天" + hour + "时" + minute + "分" + second + "秒";
-    }
-
     // enabled_mods转为mods数组
     static getScoreMods(enabledMods) {
         let raw_mods = parseInt(enabledMods);
@@ -78,7 +58,8 @@ class utils {
         const modsArr = this.getScoreMods(enabledMods);
         // 只需要把常用的提取出来就好了
         let abbMods = [];
-        for (let i = 0; i < mods.length; i++) {
+        let hasRelax = false;
+        for (let i = 0; i < modsArr.length; i++) {
             if (modsArr[i] === "Hidden") abbMods.push("HD");
             else if (modsArr[i] === "HardRock") abbMods.push("HR");
             else if (modsArr[i] === "DoubleTime") abbMods.push("DT");
@@ -90,12 +71,17 @@ class utils {
             else if (modsArr[i] === "SpunOut") abbMods.push("SO");
             //else if (modsArr[i] === "TouchDevice") abbMods.push("TD");
             else if (modsArr[i] === "KeyMod") abbMods.push("KeyMod");
+            else if (modsArr[i] === "Relax") hasRelax = true;
         }
-        //有NC时去掉DT
+        // 有NC时去掉DT
         const indexDT = abbMods.indexOf("DT");
         const indexNC = abbMods.indexOf("NC");
         if (indexNC >= 0) abbMods.splice(indexDT, 1);
-        return abbMods.join("");
+        let modsString = abbMods.join("");
+        if (!modsString) modsString = "None"
+        // relax放最后面
+        if (hasRelax) modsString = modsString + ", Relax";
+        return modsString;
     }
 
     // 计算mods数值（指令+号后面的）
@@ -177,10 +163,11 @@ class utils {
     }
     // mode转string
     static getModeString(mode) {
-        if (mode === "0") return "Standard";
-        else if (mode === "1") return "Taiko";
-        else if (mode === "2") return "Catch The Beat";
-        else if (mode === "3") return "Mania";
+        let modeString = mode.toString();
+        if (modeString === "0") return "Standard";
+        else if (modeString === "1") return "Taiko";
+        else if (modeString === "2") return "Catch The Beat";
+        else if (modeString === "3") return "Mania";
         else return "未知";
     }
     // approved状态转string

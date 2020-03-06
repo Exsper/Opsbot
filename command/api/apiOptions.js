@@ -1,4 +1,4 @@
-const commonFunctions = require('./commonFunctions');
+const utils = require('./utils');
 
 class apiOptions {
     constructor(beatmap, user, limit, mods, mode) {
@@ -11,7 +11,6 @@ class apiOptions {
 
     getOneArgObject(singlebeatmap, singleuser, singlelimit, singlemods, singlemode) {
         let argObject = {};
-        let cf = new commonFunctions();
         if (singlebeatmap) argObject.b = singlebeatmap;
         if (singleuser) {
             if ((singleuser.legnth > 4) && (singleuser.substring(0, 1) === "\"") && (singleuser.substring(singleuser.length - 1) === "\"")) {
@@ -24,8 +23,8 @@ class apiOptions {
             }
         }
         if (singlelimit) argObject.limit = singlelimit;
-        if (singlemods) argObject.mods = cf.getScoreMods(singlemods.toUpperCase()).toString();
-        if (singlemode) argObject.m = cf.getMode(singlemode);
+        if (singlemods) argObject.mods = utils.getScoreMods(singlemods.toUpperCase()).toString();
+        if (singlemode) argObject.m = utils.getMode(singlemode);
         return argObject;
     }
 

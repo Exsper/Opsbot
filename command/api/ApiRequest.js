@@ -9,7 +9,7 @@ class OsuApi {
         return new Promise((resolve, reject) => {
             const querystring = require('querystring');
             const contents = querystring.stringify(options.data);
-            requestOptions = {
+            const requestOptions = {
                 host: options.host,
                 port: 443,
                 type: 'https',
@@ -21,7 +21,7 @@ class OsuApi {
                 }
             }
             let _data = '';
-            https = require('https');
+            const https = require('https');
             const req = https.request(requestOptions, function (res) {
                 res.setEncoding('utf8');
                 res.on('data', function (chunk) {
@@ -41,7 +41,7 @@ class OsuApi {
     }
 
     async apiCall(_path, _data) {
-        return await apiRequest({
+        return await this.apiRequest({
             path: _path,
             data: _data,
             host: this.host
@@ -79,6 +79,11 @@ class OsuApi {
 
     async getUserRecent(options) {
         const resp = await this.apiCall('/get_user_recent', options);
+        return resp;
+    }
+
+    async getUserRecentRx(options) {
+        const resp = await this.apiCall('/get_user_rxrecent', options);
         return resp;
     }
 }

@@ -4,7 +4,7 @@ class BeatmapObject {
     constructor(beatmap) {
         this.beatmapId = beatmap.beatmap_id;
         this.beatmapSetId = beatmap.beatmapset_id;
-        this.mode = beatmap.mode;
+        this.mode = parseInt(beatmap.mode);
         this.beatmapMode = utils.getModeString(beatmap.mode);
         this.artist = beatmap.artist;
         this.title = beatmap.title;
@@ -36,7 +36,7 @@ class BeatmapObject {
     }
 
     toScoreTitle(scoreModeString = this.beatmapMode) {
-        let output = output + "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + " 的" + scoreModeString + "成绩：\n";
+        return "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + " 的" + scoreModeString + "成绩：\n";
     }
 }
 
