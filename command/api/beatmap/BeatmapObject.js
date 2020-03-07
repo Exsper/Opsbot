@@ -25,8 +25,8 @@ class BeatmapObject {
     toString() {
         let output = "";
 
-        output = output + "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + "\n";
-        output = output + "模式： " + this.beatmapMode + " 状态： " + this.approved + "\n";
+        output = output + "谱面 " + this.beatmapId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + "\n";
+        output = output + "set： " + this.beatmapSetId + " 模式： " + this.beatmapMode + " 状态： " + this.approved + "\n";
         output = output + "CS" + this.cs + "  AR" + this.ar + "  OD" + this.od + "  HP" + this.hp + "  BPM: " + this.bpm + " stars: " + this.stars + "\n";
         output = output + "max Combo： " + this.maxCombo + "\n";
 
@@ -36,7 +36,7 @@ class BeatmapObject {
     }
 
     toScoreTitle(scoreModeString = this.beatmapMode) {
-        return "谱面 " + this.beatmapSetId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + " 的" + scoreModeString + "成绩：\n";
+        return "谱面 " + this.beatmapId + " " + this.artist + " - " + this.title + "[" + this.diff + "] " + " 的" + scoreModeString + "成绩：\n";
     }
 }
 
