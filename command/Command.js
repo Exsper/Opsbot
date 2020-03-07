@@ -55,7 +55,6 @@ class Command {
                 Object.assign(args, { [key]: mr[i].trim() });
             }
         }
-        if (args.u.trim() === "me") args.u = userOsuInfo.osuId;
         let user = [args.u, args.u2];
         user = user.filter(item => item); // 去除空值
         return new ApiOptions(args.b, user, args.limit, args.mods, args.m);

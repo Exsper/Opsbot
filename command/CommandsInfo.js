@@ -3,7 +3,7 @@ function CommandsInfo(prefix = '$', prefix2 = '￥') {
     this.prefix2 = prefix2;
     this.help = {
         args: "[]中的参数为必要参数，()中的参数为可选参数\n",
-        userName: "绑定后username可以使用'me'替代或直接省略，纯数字id可以尝试在名字前后加上\"号\n"
+        userName: "绑定后username可以直接省略，纯数字id可以尝试在名字前后加上\"号\n"
     };
     this.apiType = {
         beatmap: 'apibeatmap',
