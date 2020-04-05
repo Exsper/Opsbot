@@ -1,6 +1,8 @@
 # OpsBot
 koishi based qq-bot plugin for ppy.sb
 
+已停止更新，请转至使用ripple api的 [Opsbot-ripple](https://github.com/Exsper/Opsbot-ripple)
+
 ## install
 ```sh
 npm install Exsper/Opsbot
